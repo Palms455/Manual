@@ -1,17 +1,22 @@
 from rest_framework import serializers
 from .models import Schedule, Element
-class ScheduleSerializer(serializers.Serializer):
-	name = serializers.CharField(max_length=250)
-	title = serializers.CharField(max_length = 150)
-	description = serializers.CharField()
-	version = serializers.CharField()
-	date = serializers.CharField()
+class ScheduleSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = Schedule
+
+		fields=('name', 'title', 'description', 'version', 'date')
 
 	def create(self, validated_data):
 		return Schedule.objects.create(**validated_data)
 
-class ElementSerializer(serializers.Serializer):
-	schedule_id = serializers.IntegerField() 
-	code = serializers.CharField()
-	value = serializers.CharField()
+class ElementSerializer(serializers.ModelSerializer):
+
+	schedule = serializers.CharField(source="schedule.title", read_only=True)
+	#show title instead shedule_id
+
+	class Meta:
+		model = Element
+		fields = ('schedule', 'code', 'value')
+	
 	
