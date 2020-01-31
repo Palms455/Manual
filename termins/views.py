@@ -57,18 +57,53 @@ class ElementView(APIView):
 		return Response({'elements' : serializer.data})
 
 		
-class ElementsVersionView(APIView):
-	def get(self, request, in_version):
- 		elements = Element.objects.filter(schedule__version= in_version)
- 		if elements:
- 			serializer = ElementSerializer(elements, many=True)
- 			return Response({'elements' : serializer.data})
- 		return Response({'Does Not Exist'})
 
 class ValidateElementView(APIView):
 	def get(self,request):
-		version = request.GET.get('version')
+		in_version = request.GET.get('version')
 		in_schedule = request.GET.get('schedule')
 		in_code = request.GET.get('code')
 		in_value = request.GET.get('value')
 
+		if not in_schedule:
+			content = {"schedule": ["This field may not be blank."]}
+			return Response(content, status=status.HTTP_400_BAD_REQUEST)
+		item = Schedule.objects.filter(title = in_schedule)
+		if not item:
+			content={f'{in_schedule} does not exist'}
+			return Response(content, status=status.HTTP_404_NOT_FOUND)
+		if not in_version:
+			item = Schedule.objects.filter(title=in_schedule).order_by('-version').first()
+			if not in_code:
+				content = {"code": ["This field may not be blank."]}
+				return Response(content, status=status.HTTP_400_BAD_REQUEST)
+			if not in_value:
+				content = {"value": ["This field may not be blank."]}
+				return Response(content, status=status.HTTP_400_BAD_REQUEST)
+			try:
+				element = Element.objects.get(code=in_code, schedule=item)
+			except Element.DoesNotExist:
+				content={f'{in_code} does not exist'}
+				return Response(content, status=status.HTTP_404_NOT_FOUND)
+			if element.value != in_value:
+				content={f'{in_value} does not equal {element.value}'}
+				return Response(content, status=status.HTTP_404_NOT_FOUND)
+			else:
+				return Response({"all checked!!!"})
+
+		try:
+			item = Schedule.objects.get(title=in_schedule, version=in_version)
+		except Schedule.DoesNotExist:
+			return Response(content, status=status.HTTP_404_NOT_FOUND)
+		if not in_code:
+			content = {"code": ["This field may not be blank."]}
+			return Response(content, status=status.HTTP_400_BAD_REQUEST)
+		if not in_value:
+			content = {"value": ["This field may not be blank."]}
+			return Response(content, status=status.HTTP_400_BAD_REQUEST)
+		try:
+			element = Element.objects.get(code=in_code, schedule=item)
+		except Element.DoesNotExist:
+			return Response(status=status.HTTP_404_NOT_FOUND, content={f'{in_code} does not exist'})
+		if element.value != in_value:
+			return Response(status=status.HTTP_404_NOT_FOUND, content={f'{in_value} does not equal {element.value}'})
