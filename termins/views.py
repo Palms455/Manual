@@ -46,9 +46,10 @@ class ElementView(APIView):
 		if in_version:
 			try:
 				item = Schedule.objects.get(version = in_version)
-				elements = Element.objects.filter(schedule=item)
 			except Schedule.DoesNotExist:
 				return Response({'Version does not exist'})
+				
+			elements = Element.objects.filter(schedule=item)
 			serializer = ElementSerializer(elements, many=True)
 			return Response({'elements' : serializer.data})
 		item = Schedule.objects.filter(title=in_schedule).order_by('-version').first()
@@ -104,6 +105,10 @@ class ValidateElementView(APIView):
 		try:
 			element = Element.objects.get(code=in_code, schedule=item)
 		except Element.DoesNotExist:
-			return Response(status=status.HTTP_404_NOT_FOUND, content={f'{in_code} does not exist'})
+			content={f'{in_code} does not exist'}
+			return Response(content, status=status.HTTP_404_NOT_FOUND)
 		if element.value != in_value:
-			return Response(status=status.HTTP_404_NOT_FOUND, content={f'{in_value} does not equal {element.value}'})
+			content={f'{in_value} does not equal {element.value}'}
+			return Response(content, status=status.HTTP_404_NOT_FOUND)
+		else:
+			return Response({"all checked!!!"})
