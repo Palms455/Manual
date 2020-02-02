@@ -4,11 +4,8 @@ class ScheduleSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Schedule
-
 		fields=('name', 'title', 'description', 'version', 'date')
 
-	def create(self, validated_data):
-		return Schedule.objects.create(**validated_data)
 
 class ElementSerializer(serializers.ModelSerializer):
 

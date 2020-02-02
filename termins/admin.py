@@ -3,7 +3,7 @@ from .models import Schedule, Element
 # Register your models here.
 class ScheduleAdmin(admin.ModelAdmin):
 	'''справочники'''
-	list_display=('title','version','date')
+	list_display=('name', 'title', 'version', 'date')
 
 class ElementAdmin(admin.ModelAdmin):
 	list_display=('schedule', 'code', 'value')
