@@ -3,7 +3,7 @@ RESTfull API  Сервис терминологии
 
 1 Список всех справочников : api/schedules/
 
-2 Спиcок справочников, актуальных на указанную дату: api/schedules/?date=yyy-mm-dd
+2 Спиcок справочников, актуальных на указанную дату: api/schedules/?date=yyyy-mm-dd
 
 3 Элементы конкретного справочника текущей версии: api/elements/?schedule=%name
 
